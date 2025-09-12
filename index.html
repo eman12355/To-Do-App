@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    /* 🌈 Background */
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: white;
+    }
+
+    /* 📦 Container with Glassmorphism */
+    section {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      width: 380px;
+      transition: transform 0.3s ease;
+    }
+
+    section:hover {
+      transform: translateY(-5px);
+    }
+
+    /* 📝 Heading */
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+      letter-spacing: 1.5px;
+      background: linear-gradient(90deg, #ff9800, #ffc107);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* 🖊 Input */
+    .input-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 12px;
+      outline: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      transition: 0.3s ease;
+    }
+
+    input::placeholder {
+      color: #ddd;
+    }
+
+    input:focus {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ➕ Add Button */
+    #btn {
+      margin-left: 10px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      background: linear-gradient(135deg, #4caf50, #81c784);
+      color: white;
+      transition: 0.3s ease;
+    }
+
+    #btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #4caf50;
+    }
+
+    /* 📋 List */
+    ul {
+      margin-top: 20px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .list {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px;
+      margin: 10px 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .list:hover {
+      transform: translateX(5px);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ❌ Delete Button */
+    .list button {
+      background: linear-gradient(135deg, #e53935, #ef5350);
+      border: none;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    .list button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #e53935;
+    }
+
+    /* ✨ Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <body>
+    <section>
+      <h1>✨ Modern Todo</h1>
+      <div class="input-container">
+        <input type="text" id="todo-input" placeholder="Write your task..." />
+        <button id="btn">Add</button>
+      </div>
+      <ul id="mylist"></ul>
+    </section>
+
+    <script>
+      let btn = document.getElementById("btn");
+      let btn1 = document.getElementById("btn1");
+      let input = document.getElementById("todo-input");
+      let mylist = document.getElementById("mylist");
+
+      //getitemtodo
+      function getitemsToDolist() {
+        return JSON.parse(localStorage.getItem("fruits"));
+      }
+
+      const addonlocal = (localTodolist) => {
+        return localStorage.setItem("fruits", JSON.stringify(localTodolist));
+      };
+
+      localTodolist = getitemsToDolist() || [];
+      console.log(getitemsToDolist());
+      const dynamiclist = (ele) => {
+        let items = document.createElement("li");
+        items.classList.add("list");
+        items.innerHTML = `<span>${ele}</span> <button class='delbtn'>Del</button>`;
+        mylist.appendChild(items);
+      };
+      //addtodo
+      function Addtodo() {
+        let localTodovalue = input.value.trim();
+        input.value = "";
+        if (!localTodolist.includes(localTodovalue)) {
+          localTodolist.push(localTodovalue);
+          localTodolist = [...new Set(localTodolist)];
+          localStorage.setItem("fruits", JSON.stringify(localTodolist));
+          dynamiclist(localTodovalue);
+        } else {
+          alert("you have already this item in your list.");
+        }
+      }
+
+      //show todo
+
+      const showToDo = () => {
+        localTodolist.forEach((ele) => {
+          dynamiclist(ele);
+        });
+      };
+      showToDo();
+
+      const removeitem = (e) => {
+        const removetodo = e.target;
+        const content = removetodo.previousElementSibling.textContent;
+
+        const parentele = removetodo.parentElement;
+        console.log(content);
+        localTodolist = localTodolist.filter((current) => {
+          return current !== content.toLowerCase();
+        });
+        addonlocal(localTodolist);
+
+        parentele.remove();
+      };
+
+      //buttons
+      btn.addEventListener("click", () => {
+        if (input.value !== "") {
+          Addtodo();
+        }
+      });
+      mylist.addEventListener("click", (eleremove) => {
+        if (eleremove.target.classList.contains("delbtn")) {
+          removeitem(eleremove);
+        }
+      });
+    </script>
+  </body>
+</html>
